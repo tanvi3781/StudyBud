@@ -4,6 +4,7 @@ from .generic_views import RoomList, RoomDetail ,RoomCreate, RoomUpdate, RoomDel
 
 
 urlpatterns = [
+
     path('',views.getRoutes),
     path('home/', views.homeAPI),
     path('rooms/', views.getRooms),
@@ -16,7 +17,7 @@ urlpatterns = [
     path('generic/rooms/', RoomList.as_view()),
     path('generic/rooms/<int:pk>/', RoomDetail.as_view()),
     path('generic/rooms/create/', RoomCreate.as_view()),
-    path('generic/rooms/update/<int:pk>/', RoomUpdate),
+    path('generic/rooms/update/<int:pk>/', RoomUpdate.as_view()),
     path('generic/rooms/delete/<int:pk>/', RoomDelete.as_view()),
-   
+      
 ]
