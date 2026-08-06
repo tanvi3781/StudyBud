@@ -7,13 +7,13 @@ from .generic_views import RoomList, RoomDetail ,RoomCreate, RoomUpdate, RoomDel
 
 urlpatterns = [
 
-    # path('',views.getRoutes),
-    # path('home/', views.homeAPI),
-    # path('rooms/', views.getRooms),
-    # path('rooms/create/', views.createRoom),
-    # path('rooms/<str:pk>/', views.getRoomDetails),
-    # path('rooms/update/<str:pk>/', views.updateRoom),
-    # path('rooms/delete/<str:pk>/', views.deleteRoom),
+    path('',views.getRoutes),
+    path('home/', views.homeAPI),
+    path('rooms/', views.getRooms),
+    path('rooms/create/', views.createRoom),
+    path('rooms/<str:pk>/', views.getRoomDetails),
+    path('rooms/update/<str:pk>/', views.updateRoom),
+    path('rooms/delete/<str:pk>/', views.deleteRoom),
 
 
     path('generic/rooms/', RoomList.as_view()),
@@ -21,6 +21,16 @@ urlpatterns = [
     path('generic/rooms/create/', RoomCreate.as_view()),
     path('generic/rooms/update/<int:pk>/', RoomUpdate.as_view()),
     path('generic/rooms/delete/<int:pk>/', RoomDelete.as_view()),
+
+    path(
+    'messages/create/',
+    views.createMessage
+),
+
+path(
+    'messages/delete/<str:pk>/',
+    views.deleteMessage
+),
       
 ]
 

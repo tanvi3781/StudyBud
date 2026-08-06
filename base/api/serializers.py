@@ -1,26 +1,71 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer , SerializerMethodField
 from base.models import Room, Topic, Message
 from django.contrib.auth.models import User
-
-
-class RoomSerializer(ModelSerializer):
-    class Meta:
-        model = Room
-        fields = "__all__"
+from rest_framework import serializers
 
 
 class TopicSerializer(ModelSerializer):
+    room_count = SerializerMethodField()
+
     class Meta:
         model = Topic
-        fields = "__all__"
+        fields = ["id", "name", "room_count"]
+
+    def get_room_count(self, obj):
+        return obj.room_set.count()
 
 
-class MessageSerializer(ModelSerializer):
-    class Meta:
-        model = Message
-        fields = "__all__"
 
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
+class RoomSerializer(ModelSerializer):
+    host = UserSerializer(read_only=True)
+    topic = TopicSerializer(read_only=True)
+    participants = UserSerializer(many=True, read_only=True)
+    topic_id = serializers.IntegerField(
+        write_only=True,
+        required=False
+    )
+
+    class Meta:
+        model = Room
+        fields = [
+            "id",
+            "host",
+            "topic",
+            "topic_id",
+            "name",
+            "description",
+            "participants",
+            "created",
+            "updated"
+        ]
+
+    def create(self, validated_data):
+
+        topic_id = validated_data.pop("topic_id")
+
+        room = Room.objects.create(
+            topic_id=topic_id,
+            **validated_data
+        )
+
+        return room
+
+
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(read_only=True)
+
+    room = serializers.PrimaryKeyRelatedField(
+        queryset=Room.objects.all()
+    )
+
+
+    class Meta:
+        model = Message
+        fields = "__all__"

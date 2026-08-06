@@ -7,6 +7,9 @@ from django.db.models import Q
 from base.models import Room, Topic, Message
 from .serializers import RoomSerializer, TopicSerializer, MessageSerializer, UserSerializer
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -73,19 +76,32 @@ def getRoomDetails(request, pk):
         "participants": UserSerializer(participants, many=True).data,
     })
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def createRoom(request):
 
-    if request.method == 'GET':
-        return Response({"message": "Send a POST request to create a room."})
+    data = request.data
 
-    serializer = RoomSerializer(data=request.data)
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
+    topic_name = data.get("topic")
 
-    return Response(serializer.errors)
+
+    topic, created = Topic.objects.get_or_create(
+        name=topic_name
+    )
+
+
+    room = Room.objects.create(
+        host = User.objects.first(),
+        topic=topic,
+        name=data.get("name"),
+        description=data.get("description")
+    )
+
+
+    serializer = RoomSerializer(room)
+
+
+    return Response(serializer.data)
 
 @api_view(['PUT'])
 def updateRoom(request, pk):
@@ -107,5 +123,40 @@ def deleteRoom(request, pk):
 
     return Response(
         {"message": "Room deleted successfully"},
+        status=status.HTTP_204_NO_CONTENT
+    )
+
+
+@api_view(['POST'])
+def createMessage(request):
+
+    serializer = MessageSerializer(data=request.data)
+
+    if serializer.is_valid():
+
+        user = User.objects.get(id=1)
+
+        message = serializer.save(
+            user=user
+        )
+
+        return Response(
+            MessageSerializer(message).data,
+            status=status.HTTP_201_CREATED
+        )
+
+    return Response(serializer.errors)
+
+@api_view(['DELETE'])
+def deleteMessage(request, pk):
+
+    message = Message.objects.get(id=pk)
+
+    message.delete()
+
+    return Response(
+        {
+            "message":"Message deleted successfully"
+        },
         status=status.HTTP_204_NO_CONTENT
     )
