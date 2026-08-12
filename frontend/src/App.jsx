@@ -4,20 +4,42 @@ import Home from "./pages/Home";
 import TopicsPage from "./pages/TopicsPage";
 import RoomPage from "./pages/RoomPage";
 import CreateRoom from "./pages/CreateRoom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Messages from "./components/Messages";
+import ProfilePage from "./pages/ProfilePage";
+// import EditProfile from "./pages/EditProfile";
 
 function App() {
   return (
-    <Routes>
+    <>
 
-      <Route path="/" element={<Home />} />
+      <Messages />
+        <Routes>
 
-      <Route path="/topics" element={<TopicsPage />} />
+          <Route path="/" element={<Home />} />
 
-      <Route path="/room/:id" element={<RoomPage />} />
+          <Route path="/topics" element={<TopicsPage />} />
 
-      <Route path="/create-room" element={<CreateRoom />} />
+          <Route path="/room/:id" element={<RoomPage />} />
 
-    </Routes>
+          <Route path="/create-room" element={<CreateRoom />} />
+
+          <Route path="/login" element={<Login />} />
+
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/profile/:id" element={<ProfilePage />} />
+{/*           
+          <Route path="/update-user" element={<EditProfile />} /> */}
+
+          {/* <Route
+                    path="/create-room"
+                    element={<RoomForm />}
+                /> */}
+
+        </Routes>
+    </>
   );
 }
 

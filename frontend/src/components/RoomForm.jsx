@@ -21,11 +21,7 @@ function RoomForm() {
 
 
 
-    useEffect(()=>{
-
-        getTopics();
-
-    },[]);
+    
 
 
 
@@ -47,6 +43,11 @@ function RoomForm() {
     };
 
 
+    useEffect(()=>{
+
+        getTopics();
+
+    },[]);
 
     const handleChange = (e)=>{
 

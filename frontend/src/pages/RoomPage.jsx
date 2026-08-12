@@ -15,9 +15,7 @@ function RoomPage() {
     const [roomData, setRoomData] = useState(null);
 
 
-    useEffect(() => {
-        fetchRoom();
-    }, [id]);
+    
 
 
     const fetchRoom = async () => {
@@ -36,6 +34,10 @@ function RoomPage() {
 
     };
 
+    useEffect(() => {
+        fetchRoom();
+    }, [id]);
+    
 
     if (!roomData) {
         return <h2>Loading room...</h2>;

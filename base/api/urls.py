@@ -3,6 +3,7 @@
 from django.urls import path
 from . import views
 from .generic_views import RoomList, RoomDetail ,RoomCreate, RoomUpdate, RoomDelete
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 urlpatterns = [
@@ -22,16 +23,18 @@ urlpatterns = [
     path('generic/rooms/update/<int:pk>/', RoomUpdate.as_view()),
     path('generic/rooms/delete/<int:pk>/', RoomDelete.as_view()),
 
-    path(
-    'messages/create/',
-    views.createMessage
-),
+    path('messages/create/',views.createMessage),
 
-path(
-    'messages/delete/<str:pk>/',
-    views.deleteMessage
-),
-      
+    path("login/", views.loginUser),
+    path("logout/", views.logoutUser),
+    path("register/", views.registerUser),
+
+    path('messages/delete/<str:pk>/',views.deleteMessage),
+
+    path('users/<str:pk>/', views.getUserProfile),
+    
+
+    path("token/", obtain_auth_token),
 ]
 
 

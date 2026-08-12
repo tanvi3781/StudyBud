@@ -10,6 +10,98 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.hashers import make_password
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import authentication_classes
+
+
+@api_view(['POST'])
+@authentication_classes([])
+def loginUser(request):
+
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response(
+            {
+                "error": "Username and password are required."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = authenticate(
+        username=username,
+        password=password
+    )
+
+    if user is None:
+        return Response(
+            {
+                "error": "Invalid username or password."
+            },
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    token, created = Token.objects.get_or_create(user=user)
+
+    return Response({
+        "token": token.key,
+        "user": UserSerializer(user).data
+    })
+
+@api_view(['POST'])
+@authentication_classes([])
+def registerUser(request):
+
+    username = request.data.get('username')
+    email = request.data.get('email', '')
+    password = request.data.get('password')
+
+    if not username or not password:
+        return Response(
+            {
+                "error": "Username and password are required."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {
+                "error": "Username already exists."
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password
+    )
+
+    return Response(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        },
+        status=status.HTTP_201_CREATED
+    )
+
+    
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def logoutUser(request):
+    if request.auth:
+        request.auth.delete()
+
+    return Response({"message": "Logged out"})
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -77,31 +169,40 @@ def getRoomDetails(request, pk):
     })
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def createRoom(request):
 
     data = request.data
 
-
     topic_name = data.get("topic")
 
+    if not topic_name:
+        return Response(
+            {"error": "Topic is required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     topic, created = Topic.objects.get_or_create(
         name=topic_name
     )
 
-
     room = Room.objects.create(
-        host = User.objects.first(),
+        host=request.user,
         topic=topic,
         name=data.get("name"),
-        description=data.get("description")
+        description=data.get("description", "")
     )
 
+    # Add host as participant
+    room.participants.add(request.user)
 
     serializer = RoomSerializer(room)
 
+    return Response(
+        serializer.data,
+        status=status.HTTP_201_CREATED
+    )
 
-    return Response(serializer.data)
 
 @api_view(['PUT'])
 def updateRoom(request, pk):
@@ -128,16 +229,15 @@ def deleteRoom(request, pk):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def createMessage(request):
 
     serializer = MessageSerializer(data=request.data)
 
     if serializer.is_valid():
 
-        user = User.objects.get(id=1)
-
         message = serializer.save(
-            user=user
+            user=request.user
         )
 
         return Response(
@@ -145,7 +245,10 @@ def createMessage(request):
             status=status.HTTP_201_CREATED
         )
 
-    return Response(serializer.errors)
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 @api_view(['DELETE'])
 def deleteMessage(request, pk):
@@ -160,3 +263,21 @@ def deleteMessage(request, pk):
         },
         status=status.HTTP_204_NO_CONTENT
     )
+
+
+@api_view(['GET'])
+def getUserProfile(request, pk):
+
+    user = User.objects.get(id=pk)
+
+    rooms = Room.objects.filter(host=user)
+
+    messages = Message.objects.filter(
+        user=user
+    ).order_by('-created')
+
+    return Response({
+        "user": UserSerializer(user).data,
+        "rooms": RoomSerializer(rooms, many=True).data,
+        "messages": MessageSerializer(messages, many=True).data,
+    })

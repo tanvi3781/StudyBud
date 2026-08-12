@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import Topics from "../components/Topics";
 import RoomList from "../components/RoomList";
 import Activity from "../components/Activity";
@@ -24,12 +23,11 @@ function Home() {
 
   return (
     <>
-      <Navbar />
 
       <main className="layout layout--3">
         <div className="container">
 
-          <Topics topics={homeData.topics} />
+          <Topics topics={homeData.topics || []} />
 
           <div className="roomList">
 
@@ -98,11 +96,11 @@ function Home() {
 
             </div>
 
-            <RoomList rooms={homeData.rooms} />
+            <RoomList rooms={homeData.rooms || []} />
 
           </div>
 
-          <Activity messages={homeData.messages} />
+          <Activity messages={homeData.messages || []} />
 
         </div>
       </main>

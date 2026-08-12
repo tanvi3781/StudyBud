@@ -16,9 +16,7 @@ function CreateRoom() {
     });
 
 
-    useEffect(() => {
-        fetchTopics();
-    }, []);
+    
 
 
     const fetchTopics = async () => {
@@ -38,6 +36,10 @@ function CreateRoom() {
     };
 
 
+    useEffect(() => {
+        fetchTopics();
+    }, []);
+    
 
     const handleChange = (e) => {
 
