@@ -59,6 +59,8 @@ jobs:
   docker:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [backend, frontend]
 
     permissions:
       id-token: write
