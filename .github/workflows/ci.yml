@@ -56,3 +56,41 @@ jobs:
 
       - name: Build React application
         run: npm run build
+  docker:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::637417025050:role/StudyBudGitHubActionsRole
+          aws-region: ap-southeast-2
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push backend image
+        run: |
+          docker build -t studybud-web .
+          docker tag studybud-web:latest \
+            637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-web:latest
+          docker push \
+            637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-web:latest
+
+      - name: Build and push frontend image
+        run: |
+          docker build -t studybud-frontend ./frontend
+          docker tag studybud-frontend:latest \
+            637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-frontend:latest
+          docker push \
+            637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-frontend:latest
+
