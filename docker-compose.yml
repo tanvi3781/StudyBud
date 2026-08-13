@@ -1,5 +1,16 @@
 services:
 
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: studybud
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   web:
     build: .
     command: >
@@ -23,17 +34,6 @@ services:
       - "3000:80"
     depends_on:
       - web
-
-  db:
-    image: postgres:17
-    environment:
-      POSTGRES_DB: studybud
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
