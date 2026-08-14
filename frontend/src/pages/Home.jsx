@@ -91,7 +91,7 @@ function Home() {
                 className="btn btn--main"
                 to="/create-room"
               >
-                + Create Room
+                + Create Room Now
               </Link>
 
             </div>
