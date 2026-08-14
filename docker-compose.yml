@@ -14,7 +14,7 @@ services:
       retries: 10
 
   web:
-    build: .
+    image: 637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-web:latest
     command: >
       sh -c "
       python manage.py migrate &&
@@ -31,8 +31,7 @@ services:
         condition: service_healthy
 
   frontend:
-    build:
-      context: ./frontend
+    image: 637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-frontend:latest
     ports:
       - "3000:80"
     depends_on:
