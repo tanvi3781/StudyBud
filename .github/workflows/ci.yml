@@ -109,7 +109,7 @@ jobs:
           docker push \
             637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-frontend:latest
 
-            - name: Deploy to EC2 via SSM
+      - name: Deploy to EC2 via SSM
         run: |
           aws ssm send-command \
             --instance-ids i-0dd979833c77556f0 \
