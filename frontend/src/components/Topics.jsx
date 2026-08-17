@@ -1,33 +1,56 @@
 import { Link } from "react-router-dom";
 
-function Topics({ topics }) {
+function Topics({ topics, roomCount }) {
   return (
     <div className="topics">
+
       <div className="topics__header">
         <h2>Browse Topics</h2>
       </div>
 
       <ul className="topics__list">
+
+        {/* ================= ALL ================= */}
+
         <li>
           <Link to="/" className="active">
-            All <span>{topics?.length || 0}</span>
+            All <span>{roomCount || 0}</span>
           </Link>
         </li>
 
+
+        {/* ================= TOPICS ================= */}
+
         {topics?.map((topic) => (
+
           <li key={topic.id}>
-            <Link to={`/?q=${topic.name}`}>
+
+            <Link
+              to={`/?q=${encodeURIComponent(topic.name)}`}
+            >
+
               {topic.name}
 
               <span>
                 {topic.room_count ?? 0}
               </span>
+
             </Link>
+
           </li>
+
         ))}
+
       </ul>
 
-      <Link className="btn btn--link" to="/topics">
+
+      {/* ================= MORE ================= */}
+
+      <Link
+        className="btn btn--link"
+        to="/topics"
+      >
+
         More
 
         <svg
@@ -37,11 +60,17 @@ function Topics({ topics }) {
           height="32"
           viewBox="0 0 32 32"
         >
-          <title>chevron-down</title>
+
+          <title>
+            chevron-down
+          </title>
 
           <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
+
         </svg>
+
       </Link>
+
     </div>
   );
 }

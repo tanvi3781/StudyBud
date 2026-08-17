@@ -3,31 +3,62 @@ import { Link, useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 
 function TopicsPage() {
+
   const [topics, setTopics] = useState([]);
+
+  const [roomCount, setRoomCount] = useState(0);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const query = searchParams.get("q") || "";
 
+
+  // ================= FETCH TOPICS =================
+
   useEffect(() => {
+
     const fetchTopics = async () => {
+
       try {
-        const res = await api.get(`/home/?q=${query}`);
-        setTopics(res.data.topics);
+
+        const res = await api.get(
+          `/home/?q=${encodeURIComponent(query)}`
+        );
+
+        setTopics(res.data.topics || []);
+
+        setRoomCount(res.data.room_count || 0);
+
       } catch (err) {
+
         console.error(err);
+
       }
+
     };
 
     fetchTopics();
+
   }, [query]);
 
+
   return (
+
     <main className="create-room layout">
+
       <div className="container">
+
         <div className="layout__box">
+
+
+          {/* ================= HEADER ================= */}
+
           <div className="layout__boxHeader">
+
             <div className="layout__boxTitle">
+
               <Link to="/">
+
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -35,21 +66,40 @@ function TopicsPage() {
                   height="32"
                   viewBox="0 0 32 32"
                 >
-                  <title>arrow-left</title>
+
+                  <title>
+                    arrow-left
+                  </title>
+
                   <path d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z"></path>
+
                 </svg>
+
               </Link>
 
-              <h3>Browse Topics</h3>
+              <h3>
+                Browse Topics
+              </h3>
+
             </div>
+
           </div>
 
+
+          {/* ================= BODY ================= */}
+
           <div className="topics-page layout__body">
+
+
+            {/* ================= SEARCH ================= */}
+
             <form
               className="header__search"
               onSubmit={(e) => e.preventDefault()}
             >
+
               <label>
+
                 <svg
                   version="1.1"
                   xmlns="http://www.w3.org/2000/svg"
@@ -57,42 +107,100 @@ function TopicsPage() {
                   height="32"
                   viewBox="0 0 32 32"
                 >
-                  <title>search</title>
+
+                  <title>
+                    search
+                  </title>
 
                   <path d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z"></path>
+
                 </svg>
+
 
                 <input
                   placeholder="Search for topics"
                   value={query}
-                  onChange={(e) =>
-                    setSearchParams({ q: e.target.value })
-                  }
+                  onChange={(e) => {
+
+                    const value = e.target.value;
+
+                    if (value.trim()) {
+
+                      setSearchParams({
+                        q: value
+                      });
+
+                    } else {
+
+                      setSearchParams({});
+
+                    }
+
+                  }}
                 />
+
               </label>
+
             </form>
 
+
+            {/* ================= TOPIC LIST ================= */}
+
             <ul className="topics__list">
+
+
+              {/* ================= ALL ================= */}
+
               <li>
-                <Link to="/topics" className={!query ? "active" : ""}>
-                  All <span>{topics.length}</span>
+
+                <Link
+                  to="/topics"
+                  className={!query ? "active" : ""}
+                >
+
+                  All
+
+                  <span>
+                    {roomCount}
+                  </span>
+
                 </Link>
+
               </li>
 
+
+              {/* ================= TOPICS ================= */}
+
               {topics.map((topic) => (
+
                 <li key={topic.id}>
-                  <Link to={`/?q=${topic.name}`}>
+
+                  <Link
+                    to={`/?q=${encodeURIComponent(topic.name)}`}
+                  >
+
                     {topic.name}
 
-                    <span>{topic.room_count ?? 0}</span>
+                    <span>
+                      {topic.room_count ?? 0}
+                    </span>
+
                   </Link>
+
                 </li>
+
               ))}
+
             </ul>
+
           </div>
+
         </div>
+
       </div>
+
     </main>
+
   );
 }
 
