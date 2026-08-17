@@ -31,7 +31,9 @@ services:
         condition: service_healthy
 
   frontend:
-    image: 637417025050.dkr.ecr.ap-southeast-2.amazonaws.com/studybud-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:80"
     depends_on:
