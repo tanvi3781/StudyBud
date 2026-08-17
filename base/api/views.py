@@ -343,11 +343,27 @@ def createMessage(request):
 @api_view(['DELETE'])
 def deleteMessage(request, pk):
 
-    message = Message.objects.get(
-        id=pk
-    )
+    message = Message.objects.get(id=pk)
 
+    room = message.room
+    user = message.user
+
+    # Delete the message
     message.delete()
+
+    # Check if the user still has any messages in this room
+    user_has_messages = Message.objects.filter(
+        room=room,
+        user=user
+    ).exists()
+
+    # If the user has no messages left,
+    # remove them from participants
+    if not user_has_messages:
+
+        # Keep the room host as a participant
+        if room.host != user:
+            room.participants.remove(user)
 
     return Response(
         {
@@ -355,6 +371,7 @@ def deleteMessage(request, pk):
         },
         status=status.HTTP_204_NO_CONTENT
     )
+    
 
 
 @api_view(['GET'])
