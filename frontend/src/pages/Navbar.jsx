@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../auth/AuthContext";
 import { useMessage } from "../context/MessageContext";
@@ -14,6 +14,51 @@ function Navbar() {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
+
+    // ================= SEARCH =================
+
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const searchQuery = searchParams.get("q") || "";
+
+    const [searchInput, setSearchInput] = useState(searchQuery);
+
+
+    // Keep search box synchronized with URL
+    useEffect(() => {
+
+        setSearchInput(searchQuery);
+
+    }, [searchQuery]);
+
+
+    const handleSearch = (e) => {
+
+        setSearchInput(e.target.value);
+
+    };
+
+
+    const handleSearchSubmit = (e) => {
+
+        e.preventDefault();
+
+        const value = searchInput.trim();
+
+        if (value) {
+
+            setSearchParams({ q: value });
+
+        } else {
+
+            setSearchParams({});
+
+        }
+
+    };
+
+
+    // ================= LOGOUT =================
 
     const handleLogout = async () => {
 
@@ -64,7 +109,7 @@ function Navbar() {
 
                 <form
                     className="header__search"
-                    onSubmit={(e) => e.preventDefault()}
+                    onSubmit={handleSearchSubmit}
                 >
 
                     <label>
@@ -77,7 +122,9 @@ function Navbar() {
                             viewBox="0 0 32 32"
                         >
 
-                            <title>search</title>
+                            <title>
+                                search
+                            </title>
 
                             <path
                                 d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12S0 5.383 0 12s5.383 12 12 12c2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"
@@ -88,7 +135,10 @@ function Navbar() {
 
                         <input
                             name="q"
+                            type="text"
                             placeholder="Search for rooms..."
+                            value={searchInput}
+                            onChange={handleSearch}
                         />
 
                     </label>
@@ -105,6 +155,7 @@ function Navbar() {
                     {user ? (
 
                         <>
+
                             {/* ================= LOGGED IN ================= */}
 
                             <div className="header__user">
@@ -225,37 +276,42 @@ function Navbar() {
                                 {/* LOGOUT */}
 
                                 <a
-    href="/login"
-    className="dropdown-link"
-    onClick={handleLogout}
->
-    <svg
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        width="32"
-        height="32"
-        viewBox="0 0 32 32"
-    >
-        <title>sign-out</title>
+                                    href="/login"
+                                    className="dropdown-link"
+                                    onClick={handleLogout}
+                                >
 
-        <path
-            d="M3 0h22c0.553 0 1 0 1 0.553l0 3.447h-2v-2h-20v28h20v-2h2l0 3.447c0 0.553-0.447 1-1 0.553h-22c-0.553 0-1-0.447-1-1v-30c0-0.553 0-1 1-1z"
-        />
+                                    <svg
+                                        version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="32"
+                                        height="32"
+                                        viewBox="0 0 32 32"
+                                    >
 
-        <path
-            d="M21.879 21.293l1.414 1.414 6.707-6.707-6.707-6.707-1.414 1.414 4.293 4.293h-14.172v2h14.172l-4.293 4.293z"
-        />
-    </svg>
+                                        <title>
+                                            sign-out
+                                        </title>
 
-    Logout
-</a>
+                                        <path
+                                            d="M3 0h22c0.553 0 1 0 1 0.553l0 3.447h-2v-2h-20v28h20v-2h2l0 3.447c0 0.553-0.447 1 0-1v-30c0-0.553-0.447-1 1-1z"
+                                        />
+
+                                        <path
+                                            d="M21.879 21.293l1.414 1.414 6.707-6.707-6.707-6.707-1.414 1.414 4.293 4.293h-14.172v2h14.172l-4.293 4.293z"
+                                        />
+
+                                    </svg>
+
+                                    Logout
+
+                                </a>
 
                             </div>
 
                         </>
 
                     ) : (
-
 
                         /* ================= LOGGED OUT ================= */
 
