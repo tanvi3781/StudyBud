@@ -15,32 +15,39 @@ function RoomPage() {
     const [roomData, setRoomData] = useState(null);
 
 
-    
-
-
     const fetchRoom = async () => {
 
         try {
 
-            const response = await api.get(`/rooms/${id}/`);
+            const response = await api.get(
+                `/rooms/${id}/`
+            );
 
             setRoomData(response.data);
 
         } catch (error) {
 
-            console.log("Error loading room:", error);
+            console.log(
+                "Error loading room:",
+                error
+            );
 
         }
 
     };
 
+
     useEffect(() => {
+
         fetchRoom();
+
     }, [id]);
-    
+
 
     if (!roomData) {
+
         return <h2>Loading room...</h2>;
+
     }
 
 
@@ -54,27 +61,24 @@ function RoomPage() {
                 <div className="room">
 
 
-                    <RoomHeader 
+                    <RoomHeader
                         room={roomData.room}
                     />
 
 
                     <MessageList
                         messages={roomData.messages}
+                        refreshRoom={fetchRoom}
                     />
 
 
                     <MessageForm
-
                         roomId={id}
-
                         refreshRoom={fetchRoom}
-
                     />
 
 
                 </div>
-
 
 
                 <Participants
@@ -83,7 +87,6 @@ function RoomPage() {
 
 
             </div>
-
 
         </main>
 
