@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import timeAgo from "../utils/timeAgo";
 
 function RoomList({ rooms }) {
 
@@ -51,10 +51,7 @@ function RoomList({ rooms }) {
 
               <span>
 
-                {room.created 
-                  ? new Date(room.created).toLocaleDateString()
-                  : ""
-                }
+                {room.created ? timeAgo(room.created) : ""}
 
               </span>
 

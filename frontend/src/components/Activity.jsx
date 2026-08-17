@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import timeAgo from "../utils/timeAgo";
+
 function Activity({ messages }) {
   return (
     <div className="activities">
@@ -20,9 +22,10 @@ function Activity({ messages }) {
             <div className="activities__boxHeader roomListRoom__header">
 
               <Link
-                to={`/profile/${message.user}`}
+                to={`/profile/${message.user.id}`}
                 className="roomListRoom__author"
               >
+
                 <div className="avatar avatar--small active">
 
                   <img
@@ -33,10 +36,11 @@ function Activity({ messages }) {
                 </div>
 
                 <p>
-                    @{message.user.username}
-                    <span>
-                        {new Date(message.created).toLocaleDateString()}
-                    </span>
+                  @{message.user.username}
+
+                  <span>
+                    {timeAgo(message.created)}
+                  </span>
                 </p>
 
               </Link>
@@ -48,7 +52,7 @@ function Activity({ messages }) {
               <p>
                 replied to post "
                 <Link to={`/room/${message.room.id}`}>
-                    {message.room.name}
+                  {message.room.name}
                 </Link>
                 "
               </p>

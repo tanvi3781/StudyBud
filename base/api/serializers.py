@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer , SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from base.models import Room, Topic, Message
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -15,11 +15,11 @@ class TopicSerializer(ModelSerializer):
         return obj.room_set.count()
 
 
-
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
+
 
 class RoomSerializer(ModelSerializer):
     host = UserSerializer(read_only=True)
@@ -56,16 +56,18 @@ class RoomSerializer(ModelSerializer):
         return room
 
 
-
 class MessageSerializer(serializers.ModelSerializer):
 
     user = UserSerializer(read_only=True)
 
-    room = serializers.PrimaryKeyRelatedField(
-        queryset=Room.objects.all()
-    )
-
+    room = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
         fields = "__all__"
+
+    def get_room(self, obj):
+        return {
+            "id": obj.room.id,
+            "name": obj.room.name
+        }
