@@ -7,7 +7,6 @@ function MessageForm({ roomId, refreshRoom }) {
     const [body, setBody] = useState("");
 
 
-
     const sendMessage = async (e) => {
 
         e.preventDefault();
@@ -22,7 +21,7 @@ function MessageForm({ roomId, refreshRoom }) {
 
             await api.post("/messages/create/", {
 
-                room: roomId,
+                room_id: roomId,
                 body: body
 
             });
@@ -31,7 +30,7 @@ function MessageForm({ roomId, refreshRoom }) {
             setBody("");
 
 
-            // reload messages
+            // reload messages and participants
             refreshRoom();
 
 
@@ -47,14 +46,11 @@ function MessageForm({ roomId, refreshRoom }) {
     };
 
 
-
     return (
 
         <div className="room__message">
 
-
             <form onSubmit={sendMessage}>
-
 
                 <input
 
@@ -70,9 +66,7 @@ function MessageForm({ roomId, refreshRoom }) {
 
                 />
 
-
             </form>
-
 
         </div>
 

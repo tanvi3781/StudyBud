@@ -1,23 +1,36 @@
 from django.http import JsonResponse
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from base.models import Room
-from .serializers import RoomSerializer
-from django.db.models import Q
+
 from base.models import Room, Topic, Message
-from .serializers import RoomSerializer, TopicSerializer, MessageSerializer, UserSerializer
+
+from .serializers import (
+    RoomSerializer,
+    TopicSerializer,
+    MessageSerializer,
+    UserSerializer
+)
+
+from django.db.models import Q
+
 from rest_framework import status
+
 from rest_framework.permissions import IsAuthenticated
+
 from rest_framework.decorators import permission_classes
+
 from django.contrib.auth.models import User
+
 from django.contrib.auth import authenticate
+
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth.hashers import make_password
+
 from rest_framework.authentication import TokenAuthentication
+
 from rest_framework.decorators import authentication_classes
+
+from django.contrib.auth.hashers import make_password
 
 
 @api_view(['POST'])
@@ -54,6 +67,7 @@ def loginUser(request):
         "token": token.key,
         "user": UserSerializer(user).data
     })
+
 
 @api_view(['POST'])
 @authentication_classes([])
@@ -94,39 +108,64 @@ def registerUser(request):
         status=status.HTTP_201_CREATED
     )
 
-    
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def logoutUser(request):
+
     if request.auth:
         request.auth.delete()
 
-    return Response({"message": "Logged out"})
+    return Response(
+        {
+            "message": "Logged out"
+        }
+    )
+
 
 @api_view(['GET'])
 def getRoutes(request):
+
     routes = [
         'GET /api',
         'GET /api/rooms',
         'GET /api/rooms/:id',
-
     ]
+
     return Response(routes)
+
 
 @api_view(['GET'])
 def getRooms(request):
+
     rooms = Room.objects.all()
-    serializer = RoomSerializer(rooms, many=True)
+
+    serializer = RoomSerializer(
+        rooms,
+        many=True
+    )
+
     return Response(serializer.data)
+
 
 @api_view(['GET'])
 def getRoom(request, pk):
-    room = Room.objects.get(id=pk)
-    serializer = RoomSerializer(room, many=False)
+
+    room = Room.objects.get(
+        id=pk
+    )
+
+    serializer = RoomSerializer(
+        room,
+        many=False
+    )
+
     return Response(serializer.data)
+
 
 @api_view(['GET'])
 def homeAPI(request):
+
     q = request.GET.get('q') if request.GET.get('q') != None else ''
 
     rooms = Room.objects.filter(
@@ -143,9 +182,20 @@ def homeAPI(request):
         Q(room__topic__name__icontains=q)
     )
 
-    rooms_serializer = RoomSerializer(rooms, many=True)
-    topics_serializer = TopicSerializer(topics, many=True)
-    messages_serializer = MessageSerializer(room_messages, many=True)
+    rooms_serializer = RoomSerializer(
+        rooms,
+        many=True
+    )
+
+    topics_serializer = TopicSerializer(
+        topics,
+        many=True
+    )
+
+    messages_serializer = MessageSerializer(
+        room_messages,
+        many=True
+    )
 
     return Response({
         "room_count": room_count,
@@ -154,9 +204,13 @@ def homeAPI(request):
         "messages": messages_serializer.data,
     })
 
+
 @api_view(['GET'])
 def getRoomDetails(request, pk):
-    room = Room.objects.get(id=pk)
+
+    room = Room.objects.get(
+        id=pk
+    )
 
     room_messages = room.message_set.all().order_by('-created')
 
@@ -164,9 +218,16 @@ def getRoomDetails(request, pk):
 
     return Response({
         "room": RoomSerializer(room).data,
-        "messages": MessageSerializer(room_messages, many=True).data,
-        "participants": UserSerializer(participants, many=True).data,
+        "messages": MessageSerializer(
+            room_messages,
+            many=True
+        ).data,
+        "participants": UserSerializer(
+            participants,
+            many=True
+        ).data,
     })
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -178,7 +239,9 @@ def createRoom(request):
 
     if not topic_name:
         return Response(
-            {"error": "Topic is required."},
+            {
+                "error": "Topic is required."
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -206,24 +269,43 @@ def createRoom(request):
 
 @api_view(['PUT'])
 def updateRoom(request, pk):
-    room = Room.objects.get(id=pk)
 
-    serializer = RoomSerializer(room, data=request.data)
+    room = Room.objects.get(
+        id=pk
+    )
+
+    serializer = RoomSerializer(
+        room,
+        data=request.data
+    )
 
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(
+            serializer.data
+        )
+
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
 
 @api_view(['DELETE'])
 def deleteRoom(request, pk):
-    room = Room.objects.get(id=pk)
+
+    room = Room.objects.get(
+        id=pk
+    )
 
     room.delete()
 
     return Response(
-        {"message": "Room deleted successfully"},
+        {
+            "message": "Room deleted successfully"
+        },
         status=status.HTTP_204_NO_CONTENT
     )
 
@@ -232,12 +314,19 @@ def deleteRoom(request, pk):
 @permission_classes([IsAuthenticated])
 def createMessage(request):
 
-    serializer = MessageSerializer(data=request.data)
+    serializer = MessageSerializer(
+        data=request.data
+    )
 
     if serializer.is_valid():
 
         message = serializer.save(
             user=request.user
+        )
+
+        # Add the sender to the room participants
+        message.room.participants.add(
+            request.user
         )
 
         return Response(
@@ -250,16 +339,19 @@ def createMessage(request):
         status=status.HTTP_400_BAD_REQUEST
     )
 
+
 @api_view(['DELETE'])
 def deleteMessage(request, pk):
 
-    message = Message.objects.get(id=pk)
+    message = Message.objects.get(
+        id=pk
+    )
 
     message.delete()
 
     return Response(
         {
-            "message":"Message deleted successfully"
+            "message": "Message deleted successfully"
         },
         status=status.HTTP_204_NO_CONTENT
     )
@@ -268,9 +360,13 @@ def deleteMessage(request, pk):
 @api_view(['GET'])
 def getUserProfile(request, pk):
 
-    user = User.objects.get(id=pk)
+    user = User.objects.get(
+        id=pk
+    )
 
-    rooms = Room.objects.filter(host=user)
+    rooms = Room.objects.filter(
+        host=user
+    )
 
     messages = Message.objects.filter(
         user=user
@@ -278,6 +374,12 @@ def getUserProfile(request, pk):
 
     return Response({
         "user": UserSerializer(user).data,
-        "rooms": RoomSerializer(rooms, many=True).data,
-        "messages": MessageSerializer(messages, many=True).data,
+        "rooms": RoomSerializer(
+            rooms,
+            many=True
+        ).data,
+        "messages": MessageSerializer(
+            messages,
+            many=True
+        ).data,
     })

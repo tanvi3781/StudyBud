@@ -1163,3 +1163,28 @@ a {
   color: var(--color-main);
   font-weight: 1.4rem;
 }
+
+
+.room__conversation {
+  height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.room__conversation::-webkit-scrollbar {
+  display: none;
+}
+
+.threads {
+  background: var(--color-bg);
+  border-radius: 0.7rem;
+  height: auto;
+  overflow: visible;
+  margin-top: 28vh;
+  padding: 0 2rem 4rem 2rem;
+}

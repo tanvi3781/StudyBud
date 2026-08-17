@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import timeAgo from "../utils/timeAgo";
 
 function RoomHeader({ room }) {
 
@@ -35,7 +35,7 @@ function RoomHeader({ room }) {
 
 
                     <span>
-                        {new Date(room.created).toLocaleDateString()}
+                        {room.created ? timeAgo(room.created) : ""}
                     </span>
 
 

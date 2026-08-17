@@ -25,6 +25,7 @@ class RoomSerializer(ModelSerializer):
     host = UserSerializer(read_only=True)
     topic = TopicSerializer(read_only=True)
     participants = UserSerializer(many=True, read_only=True)
+
     topic_id = serializers.IntegerField(
         write_only=True,
         required=False
@@ -62,9 +63,23 @@ class MessageSerializer(serializers.ModelSerializer):
 
     room = serializers.SerializerMethodField()
 
+    room_id = serializers.PrimaryKeyRelatedField(
+        source="room",
+        queryset=Room.objects.all(),
+        write_only=True
+    )
+
     class Meta:
         model = Message
-        fields = "__all__"
+        fields = [
+            "id",
+            "user",
+            "room",
+            "room_id",
+            "body",
+            "updated",
+            "created"
+        ]
 
     def get_room(self, obj):
         return {

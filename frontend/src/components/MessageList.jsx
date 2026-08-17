@@ -1,3 +1,6 @@
+import timeAgo from "../utils/timeAgo";
+
+
 function MessageList({ messages }) {
 
     return (
@@ -11,15 +14,16 @@ function MessageList({ messages }) {
                 )}
 
 
-                {messages.map((message)=>(
+                {messages.map((message) => (
 
-                    <div className="thread" key={message.id}>
-
+                    <div
+                        className="thread"
+                        key={message.id}
+                    >
 
                         <div className="thread__top">
 
                             <div className="thread__author">
-
 
                                 <span>
                                     @{message.user.username}
@@ -28,12 +32,9 @@ function MessageList({ messages }) {
 
                                 <span className="thread__date">
 
-                                    {new Date(
-                                        message.created
-                                    ).toLocaleDateString()}
+                                    {timeAgo(message.created)}
 
                                 </span>
-
 
                             </div>
 
@@ -56,6 +57,8 @@ function MessageList({ messages }) {
         </div>
 
     );
+
 }
+
 
 export default MessageList;

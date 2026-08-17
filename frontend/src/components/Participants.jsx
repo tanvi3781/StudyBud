@@ -1,14 +1,13 @@
 function Participants({ participants }) {
 
-
     return (
 
         <div className="participants">
 
-
             <h3 className="participants__top">
 
-                Participants 
+                Participants
+
                 <span>
                     {participants.length}
                 </span>
@@ -16,28 +15,23 @@ function Participants({ participants }) {
             </h3>
 
 
-
             <div className="participants__list scroll">
 
+                {participants.map((user) => (
 
-                {participants.map((user)=>(
-
-
-                    <div 
-                      className="participant"
-                      key={user.id}
+                    <div
+                        className="participant"
+                        key={user.id}
                     >
-
 
                         <div className="avatar avatar--medium">
 
-                            <img 
-                              src="https://randomuser.me/api/portraits/men/37.jpg"
-                              alt=""
+                            <img
+                                src="https://randomuser.me/api/portraits/men/37.jpg"
+                                alt=""
                             />
 
                         </div>
-
 
 
                         <p>
@@ -48,18 +42,13 @@ function Participants({ participants }) {
                                 @{user.username}
                             </span>
 
-
                         </p>
-
 
                     </div>
 
-
                 ))}
 
-
             </div>
-
 
         </div>
 
